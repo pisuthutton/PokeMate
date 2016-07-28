@@ -20,7 +20,7 @@ public class Update extends Task {
 
     private static int experienceGained = 0;
     private static long lastExperience = 0;
-
+	private static double xpHr;
     private static DecimalFormat ratioFormat = new DecimalFormat("#0.00");
 
     Update(final Context context) {
@@ -36,8 +36,6 @@ public class Update extends Task {
             context.getApi().getInventories().updateInventories(true);
 //            long nextXP = REQUIRED_EXPERIENCES[player.getStats().getLevel()] - REQUIRED_EXPERIENCES[player.getStats().getLevel() - 1];
             long curTotalXP = player.getStats().getExperience();
-//            long curLevelXP = curTotalXP - REQUIRED_EXPERIENCES[player.getStats().getLevel() - 1];
-//            String ratio = ratioFormat.format((double) curLevelXP / nextXP * 100.D);
             if (curTotalXP > lastExperience) {
                 if (lastExperience != 0) {
                     experienceGained += curTotalXP - lastExperience;
@@ -45,12 +43,16 @@ public class Update extends Task {
                 lastExperience = curTotalXP;
             }
             long runTime = System.currentTimeMillis() - PokeMate.startTime;
-			PokeMateUI.addMessageToLog("XP/HR - "  + (experienceGained / (runTime / 3.6E6)));
+			xpHr = (experienceGained / (runTime / 3.6E6));
         } catch (LoginFailedException | RemoteServerException e) {
             e.printStackTrace();
             System.out.println("Attempting to Login");
             Context.Login(context.getHttp());
         }
     }
+	
+	public static String getXpHr() {
+		return String.format("%.2f", xpHr);
+	}
 
 }
